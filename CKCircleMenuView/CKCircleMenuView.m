@@ -11,7 +11,8 @@
 
 @property (nonatomic) NSMutableArray* buttons;
 @property (weak, nonatomic) UIGestureRecognizer* recognizer;
-@property (nonatomic) int hoverTag;
+@property (nonatomic) NSInteger hoverTag;
+@property (nonatomic) NSInteger selectedTag;
 
 @property (nonatomic) UIColor* innerViewColor;
 @property (nonatomic) UIColor* innerViewActiveColor;
@@ -428,6 +429,13 @@ NSString* const CIRCLE_MENU_BUTTON_TITLE_FONT_SIZE = @"kCircleMenuButtonTitleFon
         }
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        
+        if (self.selectedTag > 0) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(circleMenuActivatedButtonWithIndex:)]) {
+                [self.delegate circleMenuActivatedButtonWithIndex:self.selectedTag-1];
+            }
+        }
+        
         if (self.delegate && [self.delegate respondsToSelector:@selector(circleMenuClosed)]) {
             [self.delegate circleMenuClosed];
         }
@@ -460,6 +468,7 @@ NSString* const CIRCLE_MENU_BUTTON_TITLE_FONT_SIZE = @"kCircleMenuButtonTitleFon
         // the view "hit" is none of the buttons -> display all in normal state
         [self resetButtonState];
         self.hoverTag = 0;
+        self.selectedTag = 0;
     }
 }
 
@@ -507,9 +516,7 @@ NSString* const CIRCLE_MENU_BUTTON_TITLE_FONT_SIZE = @"kCircleMenuButtonTitleFon
         UIView* tView = [self hitTest:tPoint withEvent:nil];
         int tTag = [self bareTagOfView:tView];
         if (tTag > 0) {
-            if (self.delegate && [self.delegate respondsToSelector:@selector(circleMenuActivatedButtonWithIndex:)]) {
-                [self.delegate circleMenuActivatedButtonWithIndex:tTag-1];
-            }
+            self.selectedTag = tTag;
         }
         [self closeMenu];
     }
@@ -524,11 +531,7 @@ NSString* const CIRCLE_MENU_BUTTON_TITLE_FONT_SIZE = @"kCircleMenuButtonTitleFon
 {
     int tTag = [self bareTagOfView:sender];
     if (tTag > 0) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(circleMenuActivatedButtonWithIndex:)]) {
-            [self.delegate circleMenuActivatedButtonWithIndex:tTag-1];
-        }
-        // set as hover tag for activation animation
-        self.hoverTag = tTag;
+        self.selectedTag = tTag;
     }
     [self closeMenu];
 }
@@ -557,7 +560,7 @@ NSString* const CIRCLE_MENU_BUTTON_TITLE_FONT_SIZE = @"kCircleMenuButtonTitleFon
 
 @implementation CKRoundView
 
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
     // Pythagoras a^2 + b^2 = c^2
     CGFloat tRadius = self.bounds.size.width / 2;

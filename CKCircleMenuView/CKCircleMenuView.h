@@ -19,7 +19,7 @@
  * Informs the delegate that the menu is going to be closed with
  * the button specified by the index being activated.
  */
-- (void)circleMenuActivatedButtonWithIndex:(int)anIndex;
+- (void)circleMenuActivatedButtonWithIndex:(NSInteger)anIndex;
 /**
  * Gets called when the CircleMenu has been closed. This is usually
  * sent immediately after circleMenuActivatedButtonWithIndex:.
