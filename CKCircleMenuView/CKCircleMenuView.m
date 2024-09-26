@@ -415,13 +415,16 @@ NSString* const CIRCLE_MENU_BUTTON_TITLE_FONT_SIZE = @"kCircleMenuButtonTitleFon
     if (!self.tapMode) {
         [self.recognizer removeTarget:self action:@selector(gestureChanged:)];
     }
-
+    
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        CGPoint tOrigin = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
+        [self calculateButtonPositions];
         for (UIView* tButtonView in self.buttons) {
-            if (self.hoverTag > 0 && self.hoverTag == [self bareTagOfView:tButtonView]) {
-                tButtonView.transform = CGAffineTransformMakeScale(1.8, 1.8);
-            }
+            [self addSubview:tButtonView];
             tButtonView.alpha = 0.0;
+            CGFloat tDiffX = tOrigin.x - tButtonView.frame.origin.x - self.buttonRadius;
+            CGFloat tDiffY = tOrigin.y - tButtonView.frame.origin.y - self.buttonRadius;
+            tButtonView.transform = CGAffineTransformMakeTranslation(tDiffX, tDiffY);
         }
     } completion:^(BOOL finished) {
         [self removeFromSuperview];

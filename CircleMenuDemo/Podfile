@@ -1,3 +1,5 @@
 platform :ios, '9.0'
 
-pod 'CKCircleMenuView', :path => "../CKCircleMenuView.podspec"
+target 'CircleMenuDemo' do
+  pod 'CKCircleMenuView', :path => "../CKCircleMenuView.podspec"
+end
